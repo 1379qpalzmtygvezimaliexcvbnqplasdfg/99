@@ -1,93 +1,65 @@
--- 反挂机系统和初始加载
+-- 加载反挂机脚本
 loadstring(game:HttpGet("https://pastebin.com/raw/9fFu43FF"))()
 
+-- 发送加载通知
 game:GetService("StarterGui"):SetCore("SendNotification",{ 
     Title = "看到这个就代表可以用", 
     Text = "请耐心等待加载", 
     Duration = 4 
 })
 
-local CoreGui = game:GetService("StarterGui")
-CoreGui:SetCore("SendNotification", {
-    Title = "BS",
-    Text = "正在加载（反挂机已开启）",
-    Duration = 5, 
-})
-print("反挂机开启")
-
-local vu = game:GetService("VirtualUser")
-game:GetService("Players").LocalPlayer.Idled:connect(function()
-    vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-    wait(1)
-    vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-end)
-
--- 新UI系统
+-- 创建新UI库
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/renlua/shallow/main/UI(Lua_Ware).lua"))()
 local Window = Library:new("黑洞中心(BS)")
 
--- 标签页1: 关于我们
-local About = Window:section("关于我们", true)
-About:Label("❤️BS脚本❤️")
-About:Label("本脚本只更新通用")
-About:Label("作者游戏名老大二世")
-About:Label("作者QQ1545959422")
+-- 标签页1: 我想对你们说的话
+local Tab1 = Window:Tab("我想对你们说的话", '7734068321')
+local Section1 = Tab1:section("BS脚本团队", true)
+Section1:Label("❤️BS脚本❤️")
+Section1:Label("本脚本只更新通用")
+Section1:Label("作者游戏名老大二世")
+Section1:Label("作者QQ1545959422")
+Section1:Button("复制作者QQ", function()
+    setclipboard("1545959422")
+end)
 
 -- 标签页2: 设置
-local Settings = Window:section("设置", true)
-Settings:Label("您的用户名: "..game.Players.LocalPlayer.Name)
-Settings:Label("您的注入器: "..identifyexecutor())
-Settings:Label("您当前服务器的ID: "..game.GameId)
+local Tab2 = Window:Tab("设置", '7734068321')
+local Section2 = Tab2:section("玩家信息", true)
+Section2:Label("您的用户名: "..game.Players.LocalPlayer.Name)
+Section2:Label("您的注入器: "..identifyexecutor())
+Section2:Label("您当前服务器的ID: "..game.GameId)
 
-Settings:Textbox("跳跃高度设置", "JumpPower", "输入数值", function(Value)
+local Section3 = Tab2:section("属性设置", true)
+Section3:Textbox("跳跃高度设置", "JumpPower", "输入高度值", function(Value)
     game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
 end)
-
-Settings:Textbox("移动速度设置", "WalkSpeed", "输入数值", function(Value)
+Section3:Textbox("移动速度设置", "WalkSpeed", "输入速度值", function(Value)
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
 end)
-
-Settings:Textbox("重力设置", "Gravity", "输入数值", function(Value)
+Section3:Textbox("重力设置", "Gravity", "输入重力值", function(Value)
     game.Workspace.Gravity = Value
 end)
-
-Settings:Textbox("血量设置(只能自己看)", "Health", "输入数值", function(Value)
+Section3:Textbox("血量设置(只能自己看)", "Health", "输入血量值", function(Value)
     game.Players.LocalPlayer.Character.Humanoid.Health = Value
 end)
-
-Settings:Textbox("超广角设置", "FOV", "输入数值", function(Value)
+Section3:Textbox("超广角设置", "FOV", "输入视野值", function(Value)
     Workspace.CurrentCamera.FieldOfView = Value
 end)
 
-Settings:Textbox("最大视野设置", "MaxFOV", "输入数值", function(Value)
-    Workspace.CurrentCamera.FieldOfView = Value
+local Section4 = Tab2:section("系统功能", true)
+Section4:Button("重新加入服务器", function()
+    game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, game.Players.LocalPlayer)
 end)
-
-Settings:Textbox("最小视野设置", "MinFOV", "输入数值", function(Value)
-    game.Workspace.CurrentCamera.FieldOfView = Value
-end)
-
-Settings:Button("重新加入服务器", function()
-    game:GetService("TeleportService"):TeleportToPlaceInstance(
-        game.PlaceId,
-        game.JobId,
-        game:GetService("Players").LocalPlayer
-    )
-end)
-
-Settings:Button("离开服务器", function()
+Section4:Button("离开服务器", function()
     game:Shutdown()
 end)
-
-Settings:Button("帧率显示", function()
-    -- 帧率显示代码
-    local ScreenGui = Instance.new("ScreenGui") 
+Section4:Button("帧率显示", function()
+    local ScreenGui = Instance.new("ScreenGui")
     local FpsLabel = Instance.new("TextLabel")
-    
     ScreenGui.Name = "FPSGui" 
     ScreenGui.ResetOnSpawn = false 
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
-    
     FpsLabel.Name = "FPSLabel" 
     FpsLabel.Size = UDim2.new(0, 100, 0, 50) 
     FpsLabel.Position = UDim2.new(0, 10, 0, 10) 
@@ -97,23 +69,16 @@ Settings:Button("帧率显示", function()
     FpsLabel.TextSize = 20 
     FpsLabel.TextColor3 = Color3.new(1, 1, 1) 
     FpsLabel.Parent = ScreenGui 
-     
     function updateFpsLabel() 
         local fps = math.floor(1 / game:GetService("RunService").RenderStepped:Wait()) 
         FpsLabel.Text = "帧率: " .. fps 
     end 
-     
     game:GetService("RunService").RenderStepped:Connect(updateFpsLabel) 
-    
     ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 end)
-
-Settings:Button("显示时间", function()
-    -- 时间显示代码
-    local LBLG = Instance.new("ScreenGui", getParent)
-    local LBL = Instance.new("TextLabel", getParent)
-    local player = game.Players.LocalPlayer
-
+Section4:Button("显示时间", function()
+    local LBLG = Instance.new("ScreenGui")
+    local LBL = Instance.new("TextLabel")
     LBLG.Name = "LBLG"
     LBLG.Parent = game.CoreGui
     LBLG.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -122,278 +87,140 @@ Settings:Button("显示时间", function()
     LBL.Parent = LBLG
     LBL.BackgroundColor3 = Color3.new(1, 1, 1)
     LBL.BackgroundTransparency = 1
-    LBL.BorderColor3 = Color3.new(0, 0, 0)
     LBL.Position = UDim2.new(0.75,0,0.010,0)
     LBL.Size = UDim2.new(0, 133, 0, 30)
     LBL.Font = Enum.Font.GothamSemibold
     LBL.Text = "TextLabel"
     LBL.TextColor3 = Color3.new(1, 1, 1)
     LBL.TextScaled = true
-    LBL.TextSize = 14
-    LBL.TextWrapped = true
-    LBL.Visible = true
-
     local FpsLabel = LBL
     local Heartbeat = game:GetService("RunService").Heartbeat
-    local LastIteration, Start
-    local FrameUpdateTable = { }
-
     local function HeartbeatUpdate()
-        LastIteration = tick()
-        for Index = #FrameUpdateTable, 1, -1 do
-            FrameUpdateTable[Index + 1] = (FrameUpdateTable[Index] >= LastIteration - 1) and FrameUpdateTable[Index] or nil
-        end
-        FrameUpdateTable[1] = LastIteration
-        local CurrentFPS = (tick() - Start >= 1 and #FrameUpdateTable) or (#FrameUpdateTable / (tick() - Start))
-        CurrentFPS = CurrentFPS - CurrentFPS % 1
         FpsLabel.Text = ("时间:"..os.date("%H").."时"..os.date("%M").."分"..os.date("%S")).."秒"
     end
-    Start = tick()
     Heartbeat:Connect(HeartbeatUpdate)
 end)
-
-Settings:Button("解除语音脏话限制", function()
+Section4:Button("解除语音脏话限制", function()
     voiceChatService = game:GetService("VoiceChatService")
     voiceChatService:joinVoice()
 end)
-
-Settings:Button("重开", function()
+Section4:Button("重开", function()
     game.Players.LocalPlayer.Character.Head:Remove()
 end)
 
--- 标签页3: 通用功能1
-local General1 = Window:section("通用功能1", true)
-General1:Toggle("夜视", "NightVision", false, function(Value)
+-- 标签页3: 通用1
+local Tab3 = Window:Tab("通用1", '7734068321')
+local Section5 = Tab3:section("基础功能", true)
+Section5:Toggle("夜视", "NightVision", false, function(Value)
     if Value then
         game.Lighting.Ambient = Color3.new(1, 1, 1)
     else
         game.Lighting.Ambient = Color3.new(0, 0, 0)
     end
 end)
-
-General1:Button("穿墙(可关闭)", function()
+Section5:Button("穿墙(可关闭)", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/TtmScripter/OtherScript/main/Noclip"))()
 end)
-
-General1:Button("阿尔宙斯注入器", function()
+Section5:Button("阿尔宙斯注入器", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/AZYsGithub/chillz-workshop/main/Arceus%20X%20V3"))()
 end)
-
-General1:Button("子弹追踪(视角会变得奇怪)", function()
-    local Camera = game:GetService("Workspace").CurrentCamera
-    local Players = game:GetService("Players")
-    local LocalPlayer = game:GetService("Players").LocalPlayer
-
-    local function GetClosestPlayer()
-        local ClosestPlayer = nil
-        local FarthestDistance = math.huge
-
-        for i, v in pairs(Players.GetPlayers(Players)) do
-            if v ~= LocalPlayer and v.Character and v.Character.FindFirstChild(v.Character, "HumanoidRootPart") then
-                local DistanceFromPlayer = (LocalPlayer.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude
-
-                if DistanceFromPlayer < FarthestDistance then
-                    FarthestDistance = DistanceFromPlayer
-                    ClosestPlayer = v
-                end
-            end
-        end
-
-        if ClosestPlayer then
-            return ClosestPlayer
-        end
-    end
-
-    local GameMetaTable = getrawmetatable(game)
-    local OldGameMetaTableNamecall = GameMetaTable.__namecall
-    setreadonly(GameMetaTable, false)
-
-    GameMetaTable.__namecall = newcclosure(function(object, ...)
-        local NamecallMethod = getnamecallmethod()
-        local Arguments = {...}
-
-        if tostring(NamecallMethod) == "FindPartOnRayWithIgnoreList" then
-            local ClosestPlayer = GetClosestPlayer()
-            
-            if ClosestPlayer and ClosestPlayer.Character then
-                Arguments[1] = Ray.new(Camera.CFrame.Position, (ClosestPlayer.Character.Head.Position - Camera.CFrame.Position).Unit * (Camera.CFrame.Position - ClosestPlayer.Character.Head.Position).Magnitude)
-            end
-        end
-
-        return OldGameMetaTableNamecall(object, unpack(Arguments))
-    end)
-
-    setreadonly(GameMetaTable, true)
+Section5:Button("子弹追踪(视角会变得奇怪)", function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/tYuVRD8r"))()
 end)
-
-General1:Button("飞行", function()
+Section5:Button("飞行", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/pMyEyJN6"))()
 end)
-
-General1:Button("隐身", function()
+Section5:Button("隐身", function()
     loadstring(game:HttpGet('https://pastebin.com/raw/3Rnd9rHf'))()
 end)
-
-General1:Button("安全区", function()
+Section5:Button("安全区", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/rmPfWVU3"))()
 end)
-
-General1:Button("快速旋转", function()
-    if game.Players.LocalPlayer.Character.Humanoid.RigType == Enum.HumanoidRigType.R6 then
-        spawn(function()
-            local speaker = game.Players.LocalPlayer
-            local Anim = Instance.new("Animation")
-            Anim.AnimationId = "rbxassetid://27432686"
-            local bruh = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(Anim)
-            bruh:Play()
-            bruh:AdjustSpeed(0)
-            speaker.Character.Animate.Disabled = true
-            local hi = Instance.new("Sound")
-            hi.Name = "Sound"
-            hi.SoundId = "http://www.roblox.com/asset/?id=8114290584"
-            hi.Volume = 2
-            hi.Looped = false
-            hi.archivable = false
-            hi.Parent = game.Workspace
-            hi:Play()
-            wait(1.5)
-            local spinSpeed = 30
-            local Spin = Instance.new("BodyAngularVelocity")
-            Spin.Name = "Spinning"
-            Spin.Parent = game.Players.LocalPlayer.Character.HumanoidRootPart
-            Spin.MaxTorque = Vector3.new(0, math.huge, 0)
-            Spin.AngularVelocity = Vector3.new(0,spinSpeed,0)
-            wait(3.5)
-            while speaker.Character.Humanoid.Health > 0 do
-                wait(0)
-                speaker.Character.Humanoid.HipHeight = speaker.Character.Humanoid.HipHeight + 0
-            end
-        end)
-    else
-        spawn(function()
-            local speaker = game.Players.LocalPlayer
-            local Anim = Instance.new("Animation")
-            Anim.AnimationId = "rbxassetid://507776043"
-            local bruh = game.Players.LocalPlayer.Character.Humanoid:LoadAnimation(Anim)
-            bruh:Play()
-            bruh:AdjustSpeed(0)
-            speaker.Character.Animate.Disabled = true
-            local hi = Instance.new("Sound")
-            hi.Name = "Sound"
-            hi.SoundId = "http://www.roblox.com/asset/?id=8114290584"
-            hi.Volume = 0
-            hi.Looped = false
-            hi.archivable = false
-            hi.Parent = game.Workspace
-            hi:Play()
-            wait()
-            local spinSpeed = 30
-            local Spin = Instance.new("BodyAngularVelocity")
-            Spin.Name = "Spinning"
-            Spin.Parent = game.Players.LocalPlayer.Character.HumanoidRootPart
-            Spin.MaxTorque = Vector3.new(0, math.huge, 0)
-            Spin.AngularVelocity = Vector3.new(0,spinSpeed,0)
-            wait(3.5)
-            while speaker.Character.Humanoid.Health > 0 do
-                wait(0)
-                speaker.Character.Humanoid.HipHeight = speaker.Character.Humanoid.HipHeight + 0
-            end
-        end)    
-    end
-end)
-
-General1:Button("极速旋转", function()
+Section5:Button("快速旋转", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/ckiGL34v"))()
 end)
-
-General1:Button("在聊天框中进行图画(V2)", function()
+Section5:Button("极速旋转", function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/ckiGL34v"))()
+end)
+Section5:Button("在聊天框中进行图画(V2)", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/AKadminlol/Chatdraw/refs/heads/main/Chattdraw"))()
 end)
-
-General1:Button("锁定视角", function()
+Section5:Button("锁定视角", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/gdLR5Z7X"))()
 end)
-
-General1:Button("聊天绕过", function()
+Section5:Button("聊天绕过", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/BingusWR/Fechatbypassroblox/refs/heads/main/Fe%20Roblox%20ChatBypass"))()
 end)
-
-General1:Button("操人", function()
+Section5:Button("操人", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/XmcMKfMV"))()
 end)
-
-General1:Button("灵魂出窍", function()
+Section5:Button("灵魂出窍", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/ahK5jRxM"))()
 end)
 
--- 标签页4: 通用功能2
-local General2 = Window:section("通用功能2", true)
-General2:Button("点击传送工具", function()
-    mouse = game.Players.LocalPlayer:GetMouse() tool = Instance.new("Tool") tool.RequiresHandle = false tool.Name = "[BS]传送工具" tool.Activated:connect(function() local pos = mouse.Hit+Vector3.new(0,2.5,0) pos = CFrame.new(pos.X,pos.Y,pos.Z) game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos end) tool.Parent = game.Players.LocalPlayer.Backpack
+-- 标签页4: 通用2
+local Tab4 = Window:Tab("通用2", '7734068321')
+local Section6 = Tab4:section("传送工具", true)
+Section6:Button("点击传送工具", function()
+    mouse = game.Players.LocalPlayer:GetMouse()
+    tool = Instance.new("Tool")
+    tool.RequiresHandle = false
+    tool.Name = "[BS]传送工具"
+    tool.Activated:connect(function()
+        local pos = mouse.Hit+Vector3.new(0,2.5,0)
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(pos.X,pos.Y,pos.Z)
+    end)
+    tool.Parent = game.Players.LocalPlayer.Backpack
 end)
-
-General2:Button("吸人脚本(可循环开启)", function()
+Section6:Button("吸人脚本(可循环开启)", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/sbxKPPHc"))()
 end)
-
-General2:Button("撞飞碰到的人", function()
+Section6:Button("撞飞碰到的人", function()
     loadstring(game:HttpGet(('https://raw.githubusercontent.com/0Ben1/fe/main/obf_5wpM7bBcOPspmX7lQ3m75SrYNWqxZ858ai3tJdEAId6jSI05IOUB224FQ0VSAswH.lua.txt'),true))()
 end)
-
-General2:Button("铁拳打人", function()
+Section6:Button("铁拳打人", function()
     loadstring(game:HttpGet(('https://raw.githubusercontent.com/0Ben1/fe/main/obf_rf6iQURzu1fqrytcnLBAvW34C9N55kS9g9G3CKz086rC47M6632sEd4ZZYB0AYgV.lua.txt'),true))()
 end)
-
-General2:Button("透视", function()
+Section6:Button("透视", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/Lucasfin000/SpaceHub/main/UESP'))()
 end)
-
-General2:Button("甩人", function()
+Section6:Button("甩人", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/L9QBifcX"))()
 end)
-
-General2:Button("无限跳", function()
+Section6:Button("无限跳", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/V5PQy3y0", true))()
 end)
-
-General2:Button("滚动", function()
+Section6:Button("滚动", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/BOOSBS/111/refs/heads/main/192"))()
 end)
-
-General2:Button("动画包", function()
+Section6:Button("动画包", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/fTsp2ZgP"))()
 end)
-
-General2:Button("控制玩家", function()
+Section6:Button("控制玩家", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/BOOSBS/BOOSBS/refs/heads/main/README.md"))()
 end)
-
-General2:Button("认真反复横跳", function()
+Section6:Button("认真反复横跳", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/0Ben1/fe/main/obf_11l7Y131YqJjZ31QmV5L8pI23V02b3191sEg26E75472Wl78Vi8870jRv5txZyL1.lua.txt"))()
 end)
-
-General2:Button("自瞄", function()
+Section6:Button("自瞄", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/tYuVRD8r"))()
 end)
-
-General2:Button("定住自己", function()
+Section6:Button("定住自己", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/YrfBSuWw"))()
 end)
-
-General2:Button("工具包", function()
+Section6:Button("工具包", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Bebo-Mods/BeboScripts/main/StandAwekening.lua"))()
 end)
-
-General2:Button("踏空行走", function()
+Section6:Button("踏空行走", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/GhostPlayer352/Test4/main/Float'))()
 end)
 
--- 标签页5: 通用功能3
-local General3 = Window:section("通用功能3", true)
-General3:Button("0范围", function()
+-- 标签页5: 通用3
+local Tab5 = Window:Tab("通用3", '7734068321')
+local Section7 = Tab5:section("范围设置", true)
+Section7:Button("0范围", function()
     _G.HeadSize = 0
     _G.Disabled = true
-
     game:GetService('RunService').RenderStepped:connect(function()
         if _G.Disabled then
             for i,v in next, game:GetService('Players'):GetPlayers() do
@@ -410,11 +237,9 @@ General3:Button("0范围", function()
         end
     end)
 end)
-
-General3:Button("普通范围", function()
+Section7:Button("普通范围", function()
     _G.HeadSize = 30
     _G.Disabled = true
-
     game:GetService('RunService').RenderStepped:connect(function()
         if _G.Disabled then
             for i,v in next, game:GetService('Players'):GetPlayers() do
@@ -431,11 +256,9 @@ General3:Button("普通范围", function()
         end
     end)
 end)
-
-General3:Button("中等范围", function()
+Section7:Button("中等范围", function()
     _G.HeadSize = 100
     _G.Disabled = true
-
     game:GetService('RunService').RenderStepped:connect(function()
         if _G.Disabled then
             for i,v in next, game:GetService('Players'):GetPlayers() do
@@ -452,11 +275,9 @@ General3:Button("中等范围", function()
         end
     end)
 end)
-
-General3:Button("全图范围", function()
+Section7:Button("全图范围", function()
     _G.HeadSize = 500
     _G.Disabled = true
-
     game:GetService('RunService').RenderStepped:connect(function()
         if _G.Disabled then
             for i,v in next, game:GetService('Players'):GetPlayers() do
@@ -473,11 +294,9 @@ General3:Button("全图范围", function()
         end
     end)
 end)
-
-General3:Button("终极范围", function()
+Section7:Button("终极范围", function()
     _G.HeadSize = 2500
     _G.Disabled = true
-
     game:GetService('RunService').RenderStepped:connect(function()
         if _G.Disabled then
             for i,v in next, game:GetService('Players'):GetPlayers() do
@@ -495,43 +314,35 @@ General3:Button("终极范围", function()
     end)
 end)
 
-General3:Button("选人甩飞（需要输入别人的名字）", function()
+local Section8 = Tab5:section("其他功能", true)
+Section8:Button("选人甩飞（需要输入别人的名字）", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/GhostPlayer352/Test4/main/Auto%20Fling%20Player'))()
 end)
-
-General3:Button("刷道具", function()
+Section8:Button("刷道具", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/wT1aKD4B"))()
 end)
-
-General3:Button("位置", function()
+Section8:Button("位置", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/ZJeTvyzG"))()
 end)
-
-General3:Button("爬墙", function()
+Section8:Button("爬墙", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/zXk4Rq2r"))()
 end)
-
-General3:Button("让物体起飞(Q键使用)", function()
+Section8:Button("让物体起飞(Q键使用)", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/BOOSBS/ajduoxc/refs/heads/main/ajduoxcz"))()
 end)
-
-General3:Button("键盘(配合其他脚本使用)", function()
+Section8:Button("键盘(配合其他脚本使用)", function()
     loadstring(game:HttpGet("https://gist.githubusercontent.com/RedZenXYZ/4d80bfd70ee27000660e4bfa7509c667/raw/da903c570249ab3c0c1a74f3467260972c3d87e6/KeyBoard%2520From%2520Ohio%2520Fr%2520Fr"))()
 end)
-
-General3:Button("键盘脚本(第2种)", function()
+Section8:Button("键盘脚本(第2种)", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Xxtan31/Ata/main/deltakeyboardcrack.txt", true))()
 end)
-
-General3:Button("飞车", function()
+Section8:Button("飞车", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/gNqZiexm"))()
 end)
-
-General3:Button("动作(按，开启)", function()
+Section8:Button("动作(按，开启)", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/ws8cJmTD"))()
 end)
-
-General3:Button("让头定在原地", function()
+Section8:Button("让头定在原地", function()
     local lp = game:GetService "Players".LocalPlayer
     if lp.Character:FindFirstChild "Head" then
         local char = lp.Character
@@ -549,8 +360,7 @@ General3:Button("让头定在原地", function()
         lp.Character = char
         new:Destroy()
         wait(0.1)
-        newhum:GetPropertyChangedSignal("Health"):Connect(
-        function()
+        newhum:GetPropertyChangedSignal("Health"):Connect(function()
             if newhum.Health <= 0 then
                 oldhum.Parent = lp.Character
                 wait(0.1)
@@ -566,44 +376,38 @@ General3:Button("让头定在原地", function()
         lp.Character:FindFirstChild "Head":Destroy()
     end
 end)
-
--- 标签页6: 通用功能4
-local General4 = Window:section("通用功能4", true)
-General4:Button("让走路和跳跃变卡(对别人没影响)", function()
+-- 标签页6: 通用4
+local Tab6 = Window:Tab("通用4", '7734068321')
+local Section9 = Tab6:section("特殊功能", true)
+Section9:Button("让走路和跳跃变卡(对别人没影响)", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/GhostPlayer352/Test4/main/Fe%20Fake%20Lag%20Obfuscator'))()
 end)
-
-General4:Button("蜘蛛侠", function()
+Section9:Button("蜘蛛侠", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/FTvmXKRn"))()
 end)
-
-General4:Button("变成Boss", function()
+Section9:Button("变成Boss", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/RJib5dGr"))()
 end)
-
-General4:Button("赛车漂移", function()
+Section9:Button("赛车漂移", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/AstraOutlight/my-scripts/refs/heads/main/fe%20car%20v3"))()
 end)
-
-General4:Button("生成一个怪物100秒之后会被踢", function()
+Section9:Button("生成一个怪物100秒之后会被踢", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/eF3FpfBE"))()
 end)
-
-General4:Button("人机生成器", function()
+Section9:Button("人机生成器", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/GQAtiAtG"))()
 end)
-
-General4:Button("撞人脚本", function()
+Section9:Button("撞人脚本", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/2BHVRL2x"))()
 end)
-
-General4:Button("搞鸡脚本", function()
+Section9:Button("搞鸡脚本", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/Y3gn1tmH"))()
 end)
 
 -- 标签页7: 黑洞脚本合集
-local BlackHole = Window:section("黑洞脚本合集", true)
-BlackHole:Button("辅助脚本(可以让黑洞吸力更强)", function()
+local Tab7 = Window:Tab("黑洞脚本合集", '7734068321')
+local Section10 = Tab7:section("黑洞功能", true)
+Section10:Button("辅助脚本(可以让黑洞吸力更强)", function()
     if "you wanna use rochips universal" then
         local z_x,z_z="gzrux646yj/raw/main.ts","https://glot.io/snippets/"
         local im,lonely,z_c=task.wait,game,loadstring
@@ -611,272 +415,244 @@ BlackHole:Button("辅助脚本(可以让黑洞吸力更强)", function()
         return ("This will load in about 2 - 30 seconds" or "according to your device and executor")
     end
 end)
-
-BlackHole:Button("辅助脚本第2种(可以切换黑洞模式)", function()
+Section10:Button("辅助脚本第2种(可以切换黑洞模式)", function()
     loadstring(game:HttpGet("https://gist.githubusercontent.com/AxolotlBmgo/8888080921c2b426a32dd9ff587baff1/raw/d45e03afed3c1716f36523bbf6dd741d3d2aad00/gistfile1.txt"))()
 end)
-
-BlackHole:Button("黑洞之神(别人应该看不见)", function()
-    -- 黑洞之神代码
+Section10:Button("黑洞之神(别人应该看不见)", function()
+    -- 黑洞之神脚本
 end)
-
-BlackHole:Button("最垃圾黑洞(配合指令"tpua"使用)", function()
+Section10:Button("最垃圾黑洞(配合指令"tpua"使用)", function()
     loadstring(game:HttpGet(('https://raw.githubusercontent.com/SAZXHUB/Control-update/main/README.md'),true))()
 end)
-
-BlackHole:Button("普通黑洞(E键控制)", function()
+Section10:Button("普通黑洞(E键控制)", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/Sx6PY4gV"))()
 end)
-
-BlackHole:Button("普通黑洞(第2种)(点击即跟随)", function()
+Section10:Button("普通黑洞(第2种)(点击即跟随)", function()
     loadstring(game:HttpGet(('https://pastefy.app/BbXuvVkK/raw'),true))()
 end)
-
-BlackHole:Button("高级黑洞(吸力超强E键控制)", function()
+Section10:Button("高级黑洞(吸力超强E键控制)", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/Kgtw4gt7"))()
 end)
-
-BlackHole:Button("重力型黑洞(只有自然灾害能玩)", function()
+Section10:Button("重力型黑洞(只有自然灾害能玩)", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/Fv8frZzD"))()
 end)
-
-BlackHole:Button("黑洞脚本(第1种)", function()
-    -- 黑洞脚本1代码
+Section10:Button("黑洞脚本(第1种)", function()
+    print('Hello World!');local UserInputService = game:GetService("UserInputService")
+    -- 黑洞脚本1
 end)
-
-BlackHole:Button("黑洞脚本(第2种要输入玩家名字)", function()
+Section10:Button("黑洞脚本(第2种要输入玩家名字)", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/dingding123hhh/lililiugg/main/jm114514.lua"))()
 end)
-
-BlackHole:Button("黑洞脚本(第3种)", function()
-    -- 黑洞脚本3代码
+Section10:Button("黑洞脚本(第3种)", function()
+    -- 黑洞脚本3
 end)
-
-BlackHole:Button("黑洞脚本(第4种)", function()
+Section10:Button("黑洞脚本(第4种)", function()
     loadstring(game:HttpGet("https://pastefy.app/pYhER1z4/raw"))()
 end)
-
-BlackHole:Button("黑洞脚本(第5种)", function()
+Section10:Button("黑洞脚本(第5种)", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/BingusWR/BLACKHOLDSCRIPT/refs/heads/main/BLACK%20HOLD%20SCRIPT"))()
 end)
-
-BlackHole:Button("黑洞脚本(第6种)", function()
+Section10:Button("黑洞脚本(第6种)", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/qPcm2zPy"))()
 end)
-
-BlackHole:Button("黑洞脚本(第7种)(环绕V2)", function()
+Section10:Button("黑洞脚本(第7种)(环绕V2)", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/BOOSBS/666/refs/heads/main/656"))()
 end)
 
-BlackHole:Button("黑洞脚本(第8种)(传送型黑洞)(别人看不见)", function()
-    loadstring(game:HttpGet("https://pastebin.com/raw/U29jR1Cf"))()
-end)
-
-BlackHole:Button("黑洞脚本(第9种)(环绕V5)", function()
-    loadstring(game:HttpGet("https://pastebin.com/raw/nV3g9qJz"))()
-end)
-
-BlackHole:Button("黑洞脚本(第10种)(环绕)", function()
-    -- 黑洞脚本10代码
-end)
-
-BlackHole:Button("黑洞脚本(第11种)(环绕V6)", function()
-    loadstring(game:HttpGet("https://pastebin.com/raw/VJYqU55x"))()
-end)
-
-BlackHole:Button("黑洞脚本(第12种)", function()
-    loadstring(game:HttpGet("https://pastebin.com/raw/vqn0KPcB"))()
-end)
-
-BlackHole:Button("黑洞脚本(第13种)(环绕V3)", function()
-    loadstring(game:HttpGet("https://pastebin.com/raw/b6uMdbgK"))()
-end)
-
-BlackHole:Button("黑洞脚本(第14种)(环绕V4)", function()
-    loadstring(game:HttpGet("https://pastebin.com/raw/hnevJNNc"))()
-end)
-
 -- 标签页8: 指令挂
-local Commands = Window:section("指令挂", true)
-Commands:Button("指令脚本", function()
+local Tab8 = Window:Tab("指令挂", '7734068321')
+local Section11 = Tab8:section("指令功能", true)
+Section11:Button("指令脚本", function()
     loadstring(game:HttpGet(('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'),true))()
 end)
-
-Commands:Label("bang能够掀人")
-Commands:Label("noface没有脸")
-Commands:Label("headsit坐在玩家头上加玩家名字")
-Commands:Label("float悬浮")
-Commands:Label("re重置人物但位置不变")
-Commands:Label("dance跳舞")
-Commands:Label("nolegs没有腿")
-Commands:Label("walltp碰到墙壁传送到墙壁顶部")
-Commands:Label("bring+玩家名字可以让玩家吸到你手上但是只能用于一些服务器")
-Commands:Label("carpet趴着走")
-Commands:Label("infjump无限跳跃")
-Commands:Label("xray透视地图所有物体变透明")
-Commands:Label("bang玩家开头两个英文吸在玩家身后")
-Commands:Label("noanim没有动作")
-Commands:Label("spin人物旋转")
-Commands:Label("sitwalk坐着走")
-Commands:Label("trip让你的人物摔倒")
-Commands:Label("antikick防踢")
-Commands:Label("lay躺下")
-Commands:Label("sit坐")
-Commands:Label("god加血")
-Commands:Label("invisfling配合加血可以旋转")
-Commands:Label("goto+玩家名字传送")
-Commands:Label("unxray关闭透视")
-Commands:Label("noclip穿墙")
-Commands:Label("有的可能不能用")
+Section11:Label("bang能够掀人")
+Section11:Label("noface没有脸")
+Section11:Label("headsit坐在玩家头上加玩家名字")
+Section11:Label("float悬浮")
+Section11:Label("re重置人物但位置不变")
+Section11:Label("dance跳舞")
+Section11:Label("nolegs没有腿")
+Section11:Label("walltp碰到墙壁传送到墙壁顶部")
+Section11:Label("bring+玩家名字可以让玩家吸到你手上但是只能用于一些服务器")
+Section11:Label("carpet趴着走")
+Section11:Label("infjump无限跳跃")
+Section11:Label("xray透视地图所有物体变透明")
+Section11:Label("bang玩家开头两个英文吸在玩家身后")
+Section11:Label("noanim没有动作")
+Section11:Label("spin人物旋转")
+Section11:Label("sitwalk坐着走")
+Section11:Label("trip让你的人物摔倒")
+Section11:Label("antikick防踢")
+Section11:Label("lay躺下")
+Section11:Label("sit坐")
+Section11:Label("god加血")
+Section11:Label("invisfling配合加血可以旋转")
+Section11:Label("goto+玩家名字传送")
+Section11:Label("unxray关闭透视")
+Section11:Label("noclip穿墙")
+Section11:Label("有的可能不能用")
 
 -- 标签页9: 念力
-local Telekinesis = Window:section("念力", true)
-Telekinesis:Button("获取念力工具", function()
+local Tab9 = Window:Tab("念力", '7734068321')
+local Section12 = Tab9:section("念力控制", true)
+Section12:Button("获取念力工具", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/dbcy7SHF"))()
 end)
-
-Telekinesis:Label("Q - 靠近")
-Telekinesis:Label("E - 离远")
-Telekinesis:Label("Y - 投掷")
-Telekinesis:Label("J - 超级投掷")
-Telekinesis:Label("U - 使物体自转")
-Telekinesis:Label("P - 使物体悬浮在空中")
-Telekinesis:Label("X - 走得更远一点")
-Telekinesis:Label("L - 使方块变直并锁定在前部")
-
-Telekinesis:Button("让手上的道具飘起来", function()
+Section12:Label("Q - 靠近")
+Section12:Label("E - 离远")
+Section12:Label("Y - 投掷")
+Section12:Label("J - 超级投掷")
+Section12:Label("U - 使物体自转")
+Section12:Label("P - 使物体悬浮在空中")
+Section12:Label("X - 走得更远一点")
+Section12:Label("L - 使方块变直并锁定在前部")
+Section12:Button("让手上的道具飘起来", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/WmD8MuSx"))()
 end)
+Section12:Label("J-飞起来")
+Section12:Label("K-回到手中")
 
-Telekinesis:Label("J-飞起来")
-Telekinesis:Label("K-回到手中")
-
--- 标签页10: 变身
-local Transform = Window:section("变身", true)
-Transform:Label("部分服务器可以用")
-Transform:Button("大BOSS", function()
+-- 标签页10: 变身(只能自己看)
+local Tab10 = Window:Tab("变身(只能自己看)", '7734068321')
+local Section13 = Tab10:section("变身功能", true)
+Section13:Label("部分服务器可以用")
+Section13:Button("大BOSS", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/NChRru9B"))()
 end)
-
-Transform:Button("变大变小", function()
+Section13:Button("变大变小", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/cEa7d3a5"))()
 end)
-
-Transform:Button("大飞机", function()
+Section13:Button("大飞机", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/EJS2Fde3"))()
 end)
-
-Transform:Button("巫毒娃娃", function()
+Section13:Button("巫毒娃娃", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/xqCCqeha"))()
 end)
-
-Transform:Button("天使", function()
+Section13:Button("天使", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/RaXbiByH"))()
 end)
-
 -- 标签页11: 黑洞融合表
-local BlackHoleFusion = Window:section("黑洞融合表", true)
-BlackHoleFusion:Label("黑洞中心独家创作")
-BlackHoleFusion:Label("普通黑洞2+所有黑洞=超级黑洞")
-BlackHoleFusion:Label("超级黑洞+辅助黑洞=最强黑洞")
-BlackHoleFusion:Label("全部黑洞通用融合表")
-BlackHoleFusion:Label("👆以上为亲身测试得出的结论☝")
+local Tab11 = Window:Tab("黑洞融合表", '7734068321')
+local Section14 = Tab11:section("融合表", true)
+Section14:Label("黑洞中心独家创作")
+Section14:Label("普通黑洞2+所有黑洞=超级黑洞")
+Section14:Label("超级黑洞+辅助黑洞=最强黑洞")
+Section14:Label("全部黑洞通用融合表")
+Section14:Label("👆👆以上为亲身测试得出的结论☝☝")
 
 -- 标签页12: 滤镜与光影
-local Filters = Window:section("滤镜与光影", true)
-Filters:Button("自定义画质包", function()
+local Tab12 = Window:Tab("滤镜与光影", '7734068321')
+local Section15 = Tab12:section("光影设置", true)
+Section15:Button("自定义画质包", function()
     loadstring(game:HttpGet(('https://pastefy.app/xXkUxA0P/raw'),true))()
 end)
-
-Filters:Button("恢复默认", function()
+Section15:Button("恢复默认", function()
     game.Lighting.Ambient = Color3.new(0, 0, 0)
 end)
-
-Filters:Button("亮度1", function()
+Section15:Button("亮度1", function()
     game.Lighting.Ambient = Color3.new(1, 1, 1)
 end)
-
-Filters:Button("亮度2", function()
+Section15:Button("亮度2", function()
     game.Lighting.Ambient = Color3.new(2, 2, 2)
 end)
-
-Filters:Button("亮度3", function()
+Section15:Button("亮度3", function()
     game.Lighting.Ambient = Color3.new(3, 3, 3)
 end)
-
-Filters:Button("红色", function()
+Section15:Button("红色", function()
     game.Lighting.Ambient = Color3.new(1, 0, 0)
 end)
-
-Filters:Button("绿色", function()
+Section15:Button("绿色", function()
     game.Lighting.Ambient = Color3.new(0, 1, 0)
 end)
-
-Filters:Button("蓝色", function()
+Section15:Button("蓝色", function()
     game.Lighting.Ambient = Color3.new(0, 0, 1)
 end)
-
-Filters:Button("红色(2)", function()
+Section15:Button("红色(2)", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/MZEEN2424/Graphics/main/Graphics.xml"))()
 end)
-
-Filters:Button("美丽天空（带动态阴影）", function()
-    -- 美丽天空代码
+Section15:Button("美丽天空（带动态阴影）", function()
+    -- 美丽天空脚本
 end)
-
-Filters:Button("光影(1)", function()
+Section15:Button("光影(1)", function()
     loadstring(game:HttpGet('https://pastebin.com/raw/gUceVJig'))()
 end)
-
-Filters:Button("光影(2)", function()
+Section15:Button("光影(2)", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/MZEEN2424/Graphics/main/Graphics.xml"))()
 end)
-
-Filters:Button("光影(3)", function()
+Section15:Button("光影(3)", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/jHBfJYmS"))()
 end)
 
--- 标签页13: 音乐
-local Music = Window:section("音乐", true)
-Music:Button("自定义音乐", function()
+-- 标签页13: 音乐只能自己听
+local Tab13 = Window:Tab("音乐只能自己听", '7734068321')
+local Section16 = Tab13:section("音乐功能", true)
+Section16:Button("自定义音乐", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/boyscp/beta/main/music.lua"))()
 end)
-
-Music:Button("音乐轰炸器", function()
+Section16:Button("音乐轰炸器", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/boyscp/scriscriptsc/main/%E8%BD%B0%E7%82%B8.lua"))()
 end)
-
-Music:Button("color", function()
-    -- color音乐代码
+Section16:Button("color", function()
+    local audioPlayer : AudioPlayer = Instance.new("AudioPlayer")
+    audioPlayer.Parent = workspace
+    audioPlayer.AssetId = "rbxassetid://7023828725"
+    local deviceOutput = Instance.new("AudioDeviceOutput")
+    deviceOutput.Parent = workspace
+    local wire = Instance.new("Wire")
+    wire.Parent = workspace
+    wire.SourceInstance = audioPlayer
+    wire.TargetInstance = deviceOutput
+    audioPlayer:Play()
 end)
-
-Music:Button("happy song", function()
-    -- happy song音乐代码
+Section16:Button("happy song", function()
+    local audioPlayer : AudioPlayer = Instance.new("AudioPlayer")
+    audioPlayer.Parent = workspace
+    audioPlayer.AssetId = "rbxassetid://1843404009"
+    local deviceOutput = Instance.new("AudioDeviceOutput")
+    deviceOutput.Parent = workspace
+    local wire = Instance.new("Wire")
+    wire.Parent = workspace
+    wire.SourceInstance = audioPlayer
+    wire.TargetInstance = deviceOutput
+    audioPlayer:Play()
 end)
-
-Music:Button("World-Hang up", function()
-    -- World-Hang up音乐代码
+Section16:Button("World-Hang up", function()
+    local audioPlayer : AudioPlayer = Instance.new("AudioPlayer")
+    audioPlayer.Parent = workspace
+    audioPlayer.AssetId = "rbxassetid://5410084188"
+    local deviceOutput = Instance.new("AudioDeviceOutput")
+    deviceOutput.Parent = workspace
+    local wire = Instance.new("Wire")
+    wire.Parent = workspace
+    wire.SourceInstance = audioPlayer
+    wire.TargetInstance = deviceOutput
+    audioPlayer:Play()
 end)
-
-Music:Button("雨中牛郎", function()
-    -- 雨中牛郎音乐代码
+Section16:Button("雨中牛郎", function()
+    local audioPlayer : AudioPlayer = Instance.new("AudioPlayer")
+    audioPlayer.Parent = workspace
+    audioPlayer.AssetId = "rbxassetid://16831108393"
+    local deviceOutput = Instance.new("AudioDeviceOutput")
+    deviceOutput.Parent = workspace
+    local wire = Instance.new("Wire")
+    wire.Parent = workspace
+    wire.SourceInstance = audioPlayer
+    wire.TargetInstance = deviceOutput
+    audioPlayer:Play()
 end)
-
-Music:Button("彩虹瀑布", function()
+Section16:Button("彩虹瀑布", function()
     local sound = Instance.new("Sound")
     sound.SoundId = "rbxassetid://1837879082"
     sound.Parent = game.Workspace
     sound:Play()
 end)
-
-Music:Button("义勇军进行曲", function()
+Section16:Button("义勇军进行曲", function()
     local sound = Instance.new("Sound")
     sound.SoundId = "rbxassetid://1845918434"
     sound.Parent = game.Workspace
     sound:Play()
 end)
-
-Music:Button("防空警报", function()
+Section16:Button("防空警报", function()
     local sound = Instance.new("Sound")
     sound.SoundId = "rbxassetid://792323017"
     sound.Parent = game.Workspace
@@ -884,683 +660,435 @@ Music:Button("防空警报", function()
 end)
 
 -- 标签页14: 其他脚本
-local OtherScripts = Window:section("其他脚本", true)
-OtherScripts:Button("林脚本破解版", function()
+local Tab14 = Window:Tab("其他脚本", '7734068321')
+local Section17 = Tab14:section("脚本中心", true)
+Section17:Button("林脚本破解版", function()
     AL = "Advanced Logic团队破解"
     loadstring(game:HttpGet("https://raw.githubusercontent.com/longshu886/longscript/main/linpojie"))()
 end)
-
-OtherScripts:Button("安脚本", function()
+Section17:Button("安脚本", function()
     loadstring(game:HttpGet(('https://raw.githubusercontent.com/wucan114514/gegeyxjb/refs/heads/main/%E5%AE%89%E8%84%9A%E6%9C%AC.lua')))()
 end)
-
-OtherScripts:Button("秋脚本", function()
-    _G[".秋·自制脚本 遗存抢救"]="2024dncxddtsnchzxtb0112"loadstring(game:HttpGet(utf8.char((function() return table.unpack({104,116,116,112,115,58,47,47,114,97,119,46,103,105,116,104,117,98,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109,47,87,83,98,117,113,47,45,47,109,97,105,110,47,37,69,55,37,65,55,37,56,66,37,67,50,37,66,55,37,69,56,37,56,55,37,65,65,37,69,53,37,56,56,37,66,54,37,69,56,37,56,52,37,57,65,37,69,54,37,57,67,37,65,67})end)())))()
+Section17:Button("秋脚本", function()
+    _G[".秋·自制脚本 遗存抢救"]="2024dncxddtsnchzxtb0112"
+    loadstring(game:HttpGet(utf8.char((function() return table.unpack({104,116,116,112,115,58,47,47,114,97,119,46,103,105,116,104,117,98,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109,47,87,83,98,117,113,47,45,47,109,97,105,110,47,37,69,55,37,65,55,37,56,66,37,67,50,37,66,55,37,69,56,37,56,55,37,65,65,37,69,53,37,56,56,37,66,54,37,69,56,37,56,52,37,57,65,37,69,54,37,57,67,37,65,67})end)())))()
 end)
-
-OtherScripts:Button("龙脚本破解版", function()
+Section17:Button("龙脚本破解版", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/nahida-cn/Roblox/main/long"))()
 end)
-
-OtherScripts:Button("xk脚本中心", function()
+Section17:Button("xk脚本中心", function()
     loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\34\104\116\116\112\115\58\47\47\114\97\119\46\103\105\116\104\117\98\117\115\101\114\99\111\110\116\101\110\116\46\99\111\109\47\66\73\78\106\105\97\111\98\122\120\54\47\66\73\78\106\105\97\111\47\109\97\105\110\47\88\75\46\84\88\84\34\41\41\40\41\10")()
 end)
-
-OtherScripts:Button("皮脚本", function()
+Section17:Button("皮脚本", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/xiaopi77/xiaopi77/main/QQ1002100032-Roblox-Pi-script.lua"))()
 end)
-
-OtherScripts:Button("tm脚本中心", function()
+Section17:Button("tm脚本中心", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/FZIKNEZNTAXSUGVD/-1/main/%E8%87%AA%E5%88%B6%E8%84%9A%E6%9C%AC"))()
 end)
-
-OtherScripts:Button("导管中心", function()
+Section17:Button("导管中心", function()
     loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\34\104\116\116\112\115\58\47\47\114\97\119\46\103\105\116\104\117\98\117\115\101\114\99\111\110\116\101\110\116\46\99\111\109\47\117\115\101\114\97\110\101\119\114\102\102\47\114\111\98\108\111\120\45\47\109\97\105\110\47\37\69\54\37\57\68\37\65\49\37\69\54\37\65\67\37\66\69\37\69\53\37\56\68\37\56\70\37\69\56\37\65\69\37\65\69\34\41\41\40\41\10")()
 end)
-
-OtherScripts:Button("情云脚本中心", function()
+Section17:Button("情云脚本中心", function()
     loadstring(utf8.char((function() return table.unpack({108,111,97,100,115,116,114,105,110,103,40,103,97,109,101,58,72,116,116,112,71,101,116,40,34,104,116,116,112,115,58,47,47,114,97,119,46,103,105,116,104,117,98,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109,47,67,104,105,110,97,81,89,47,45,47,109,97,105,110,47,37,69,54,37,56,51,37,56,53,37,69,52,37,66,65,37,57,49,34,41,41,40,41})end)()))()
 end)
-
-OtherScripts:Button("落叶中心", function()
-    getgenv().LS="落叶中心" loadstring(game:HttpGet("https://raw.githubusercontent.com/krlpl/Deciduous-center-LS/main/%E8%90%BD%E5%8F%B6%E4%B8%AD%E5%BF%83%E6%B7%B7%E6%B7%86.txt"))()
+Section17:Button("落叶中心", function()
+    getgenv().LS="落叶中心" 
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/krlpl/Deciduous-center-LS/main/%E8%90%BD%E5%8F%B6%E4%B8%AD%E5%BF%83%E6%B7%B7%E6%B7%86.txt"))()
 end)
-
-OtherScripts:Button("蓝标", function()
-    getgenv().XiaoPi="蓝标脚本 蓝标群912849177" loadstring(game:HttpGet("https://raw.githubusercontent.com/THDZEP/Blue-blue-blue/refs/heads/main/%E5%8F%91%E7%A5%A8%E8%93%9D%E6%A0%87"))()
+Section17:Button("蓝标", function()
+    getgenv().XiaoPi="蓝标脚本 蓝标群912849177" 
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/THDZEP/Blue-blue-blue/refs/heads/main/%E5%8F%91%E7%A5%A8%E8%93%9D%E6%A0%87"))()
 end)
-
-OtherScripts:Button("泠脚本", function()
-    getgenv().Leng="冷脚本QQ群815883059" loadstring(game:HttpGet("https://raw.githubusercontent.com/odhdshhe/lenglenglenglenglenglenlenglenglenglenglenglenglengleng-LBT-H-cold-script/refs/heads/main/LENG%20LBT-H%20cold%20script.txt"))()
+Section17:Button("泠脚本", function()
+    getgenv().Leng="冷脚本QQ群815883059" 
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/odhdshhe/lenglenglenglenglenglenlenglenglenglenglenglenglengleng-LBT-H-cold-script/refs/heads/main/LENG%20LBT-H%20cold%20script.txt"))()
 end)
 
 -- 标签页15: doors
-local Doors = Window:section("doors", true)
-Doors:Button("手电筒（没电会有bug）", function()
+local Tab15 = Window:Tab("doors", '7734068321')
+local Section18 = Tab15:section("doors功能", true)
+Section18:Button("手电筒（没电会有bug）", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/K0t1n/Public/main/Normal%20Flashlight"))()
 end)
-
-Doors:Button("夜视仪", function()
+Section18:Button("夜视仪", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/ChinaQY/Scripts/Main/NVCS-3000"))()
 end)
-
-Doors:Button("神圣炸弹", function()
+Section18:Button("神圣炸弹", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/MrNeRD0/Doors-Hack/main/HolyGrenadeByNerd.lua"))()
 end)
-
-Doors:Button("剪刀", function()
+Section18:Button("剪刀", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/MrNeRD0/Doors-Hack/main/shears_done.lua"))()
 end)
-
-Doors:Button("骷髅钥匙", function()
-    local item = game:GetObjects("rbxassetid://11697889137")[1]item.Parent = game.Players.LocalPlayer.Backpack
+Section18:Button("骷髅钥匙", function()
+    local item = game:GetObjects("rbxassetid://11697889137")[1]
+    item.Parent = game.Players.LocalPlayer.Backpack
 end)
-
-Doors:Button("紫色手电筒（在电梯购买东西的时候使用）", function()
+Section18:Button("紫色手电筒（在电梯购买东西的时候使用）", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/K0t1n/Public/main/Purple%20Flashlight"))()
 end)
-
-Doors:Button("磁铁", function()
+Section18:Button("磁铁", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/MrNeRD0/Doors-Hack/main/MagnetByNerd.lua"))()
 end)
-
-Doors:Button("nb doors", function()
+Section18:Button("nb doors", function()
     loadstring(game:HttpGet("https://github.com/DocYogurt/Main/raw/main/Scripts/DF2RW.lua"))()
 end)
-
-Doors:Button("zs", function()
+Section18:Button("zs", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/zuohongjian/bjb/main/ZS%20III"))()
 end)
 
 -- 标签页16: ohio
-local Ohio = Window:section("ohio", true)
-Ohio:Button("BS俄亥俄州(半成品)", function()
+local Tab16 = Window:Tab("ohio", '7734068321')
+local Section19 = Tab16:section("ohio功能", true)
+Section19:Button(" BS俄亥俄州(半成品)", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/Asddffgujhh/-/refs/heads/main/ohio'))()
 end)
-
-Ohio:Button("xk俄亥俄州", function()
+Section19:Button("xk俄亥俄州", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/BINjiaobzx6/BINjiao/main/XK%20Ohio.lua"))()
 end)
-
-Ohio:Button("tm俄亥俄州", function()
+Section19:Button("tm俄亥俄州", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/FZIKNEZNTAXSUGVD/-1/main/TM%E8%84%9A%E6%9C%ACTM"))()
 end)
-
-Ohio:Button("死亡笔记(吸人)", function()
+Section19:Button("死亡笔记(吸人)", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/krlpl/dfhj/main/%E6%AD%BB%E4%BA%A1%E7%AC%94%E8%AE%B0.txt"))()
 end)
-
-Ohio:Button("一拳超人", function()
+Section19:Button("一拳超人", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/rbxluau/Roblox/main/ScriptHub.lua"))()
 end)
 
 -- 标签页17: 餐厅大亨
-local Restaurant = Window:section("餐厅大亨", true)
-Restaurant:Button("餐厅大亨1", function()
+local Tab17 = Window:Tab("餐厅大亨", '7734068321')
+local Section20 = Tab17:section("餐厅大亨功能", true)
+Section20:Button("餐厅大亨1", function()
     loadstring(game:HttpGet("https://shz.al/~zkzkzisKAKAKK"))()
 end)
-
-Restaurant:Button("餐厅大亨2", function()
+Section20:Button("餐厅大亨2", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/toosiwhip/snake-hub/main/restaurant-tycoon-2.lua"))()
 end)
-
-Restaurant:Button("餐厅大亨3", function()
+Section20:Button("餐厅大亨3", function()
     loadstring(game:HttpGet("https://pastefy.app/Ppqt0Gib/raw"))()
 end)
 
 -- 标签页18: 最强战场
-local Battle = Window:section("最强战场", true)
-Battle:Button("刀锋", function()
+local Tab18 = Window:Tab("最强战场", '7734068321')
+local Section21 = Tab18:section("战场功能", true)
+Section21:Button("刀锋", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/zyrask/Nexus-Base/main/atomic-blademaster%20to%20sukuna"))()
 end)
-
-Battle:Button("五条悟", function()
+Section21:Button("五条悟", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/skibiditoiletfan2007/BaldyToSorcerer/main/Latest.lua"))()
 end)
-
-Battle:Button("饿狼自动1+2", function()
+Section21:Button("饿狼自动1+2", function()
     loadstring(game:HttpGet("https://pastefy.app/Z7DawZJB/raw"))()
 end)
-
-Battle:Button("饿狼改索尼克", function()
+Section21:Button("饿狼改索尼克", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/7V1mUBtQ"))()
 end)
-
-Battle:Button("琦玉改JUN", function()
+Section21:Button("琦玉改JUN", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/Kenjihin69/Kenjihin69/refs/heads/main/Tp%20exploit%20saitama%20to%20jun'))()
 end)
-
-Battle:Button("死神v2", function()
+Section21:Button("死神v2", function()
     getgenv().Music = false 
     getgenv().AttackQuality = 'High'
     getgenv().ConstantSpeed = false
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Reapvitalized/TSB/main/APOPHENIA.lua"))()
 end)
-
-Battle:Button("迪奥", function()
+Section21:Button("迪奥", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Medley-Taboritsky/RobloxScripting/refs/heads/main/DIO_Garou_TSB"))()
 end)
-
-Battle:Button("饿狼不知道该叫什么", function()
+Section21:Button("饿狼不知道该叫什么", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Reapvitalized/TSB/refs/heads/main/ARCAURA.lua"))()
 end)
-
-Battle:Button("索尼克改TOJI", function()
+Section21:Button("索尼克改TOJI", function()
     loadstring(game:HttpGet"https://raw.githubusercontent.com/Wi-sp/Limitless-legacy/refs/heads/main/GUI")()
 end)
-
-Battle:Button("骨架", function()
+Section21:Button("骨架", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Qaiddanial2904/ROBLOX-FREAKY-GOJO-REAL/refs/heads/main/SANS%20%5BREDACTED%5D"))()
 end)
-
-Battle:Button("饿狼改YUJI", function()
+Section21:Button("饿狼改YUJI", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/xVicity/GLACIER/main/LATEST.lua"))()
 end)
 
 -- 标签页19: 起床战争
-local BedWars = Window:section("起床战争", true)
-BedWars:Button("vepe v3", function()
+local Tab19 = Window:Tab("起床战争", '7734068321')
+local Section22 = Tab19:section("起床战争功能", true)
+Section22:Button("vepe v3", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Alan0947383/Demonic-HUB-V2/main/S-C-R-I-P-T.lua",true))()
 end)
-
-BedWars:Button("vape v4.1", function()
+Section22:Button("vape v4.1", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/V4ForRoblox/main/NewMainScript.lua", true))()
 end)
 
 -- 标签页20: 忍者传奇
-local Ninja = Window:section("忍者传奇", true)
-Ninja:Button("脚本1", function()
+local Tab20 = Window:Tab("忍者传奇", '7734068321')
+local Section23 = Tab20:section("忍者传奇功能", true)
+Section23:Button("脚本1", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/zerpqe/script/main/NinjaLegends.lua"))()
 end)
-
-Ninja:Button("脚本2", function()
+Section23:Button("脚本2", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/harisiskandar178/5repo/main/script4.lua"))()
 end)
-
-Ninja:Label("传送岛屿")
-Ninja:Button("出生", function()
+-- 标签页20: 忍者传奇 (续)
+local Section24 = Tab20:section("传送岛屿", true)
+Section24:Button("出生", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(25.665502548217773, 3.4228405952453613, 29.919952392578125)
 end)
-
-Ninja:Button("魔法", function()
+Section24:Button("魔法", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(51.17238235473633, 766.1807861328125, -138.44842529296875)
 end)
-
-Ninja:Button("星岛", function()
+Section24:Button("星岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(207.2932891845703, 2013.88037109375, 237.36672973632812)
 end)
-
-Ninja:Button("密岛", function()
+Section24:Button("密岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(171.97178649902344, 4047.380859375, 42.0699577331543)
 end)
-
-Ninja:Button("天空岛", function()
+Section24:Button("天空岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(148.83824157714844, 5657.18505859375, 73.5014877319336)
 end)
-
-Ninja:Button("冷岛", function()
+Section24:Button("冷岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(139.28330993652344, 9285.18359375, 77.36406707763672)
 end)
-
-Ninja:Button("无限岛", function()
+Section24:Button("无限岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(149.34817504882812, 13680.037109375, 73.3861312866211)
 end)
-
-Ninja:Button("沙岛", function()
+Section24:Button("沙岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(133.37144470214844, 17686.328125, 72.00334167480469)
 end)
-
-Ninja:Button("雷岛", function()
+Section24:Button("雷岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(143.19349670410156, 24070.021484375, 78.05432891845703)
 end)
-
-Ninja:Button("远古炼狱岛", function()
+Section24:Button("远古炼狱岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(141.27163696289062, 28256.294921875, 69.3790283203125)
 end)
-
-Ninja:Button("暗影岛", function()
+Section24:Button("暗影岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(132.74267578125, 33206.98046875, 57.495574951171875)
 end)
-
-Ninja:Button("灵魂岛", function()
+Section24:Button("灵魂岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(137.76148986816406, 39317.5703125, 61.06639862060547)
 end)
-
-Ninja:Button("奇迹岛", function()
+Section24:Button("奇迹岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(137.2720184326172, 46010.5546875, 55.941951751708984)
 end)
-
-Ninja:Button("黄金岛", function()
+Section24:Button("黄金岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(128.32339477539062, 52607.765625, 56.69411849975586)
 end)
-
-Ninja:Button("传奇岛", function()
+Section24:Button("传奇岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(146.35226440429688, 59594.6796875, 77.53300476074219)
 end)
-
-Ninja:Button("科技传奇岛", function()
+Section24:Button("科技传奇岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(137.3321075439453, 66669.1640625, 72.21722412109375)
 end)
-
-Ninja:Button("超能岛", function()
+Section24:Button("超能岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(135.48077392578125, 70271.15625, 57.02311325073242)
 end)
-
-Ninja:Button("混沌传奇岛", function()
+Section24:Button("混沌传奇岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(148.58590698242188, 74442.8515625, 69.3177719116211)
 end)
-
-Ninja:Button("黑暗岛", function()
+Section24:Button("黑暗岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(136.9700927734375, 79746.984375, 58.54051971435547)
 end)
-
-Ninja:Button("黑暗元素岛", function()
+Section24:Button("黑暗元素岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(141.697265625, 83198.984375, 72.73107147216797)
 end)
-
-Ninja:Button("和平岛", function()
+Section24:Button("和平岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(135.3157501220703, 87051.0625, 66.78429412841797)
 end)
-
-Ninja:Button("漩涡岛", function()
+Section24:Button("漩涡岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(135.08216857910156, 91246.0703125, 69.56692504882812)
 end)
-
-Ninja:Button("35倍金币", function()
+Section24:Button("35倍金币", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(86.2938232421875, 91245.765625, 120.54232788085938)
 end)
 
--- 自动功能变量
-local autoswing = false
-local autosell = false
-local autosellmax = false
-local autobuyswords = false
-local autobuybelts = false
-local autobuyranks = false
-local autobuyskill = false
-local autobuyshurikens = false
-
--- 自动功能实现
-local function swinging()
-    spawn(function()
-        while autoswing == true do
-            task.wait()
-            game:GetService("Players").LocalPlayer.ninjaEvent:FireServer("swingKatana")
-            if not autoswing then break end
-        end
-    end)
-end
-
-local function selling()
-    spawn(function()
-        while autosell == true do
-            task.wait(.01)
-            if game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart") then
-                game.workspace.sellAreaCircles["sellAreaCircle7"].circleInner.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-                wait(.1)
-                game.workspace.sellAreaCircles["sellAreaCircle7"].circleInner.CFrame = game.Workspace.Part.CFrame
-                if not autosell then break end
-            end
-        end
-    end)
-end
-
-local function maxsell()
-    spawn(function()
-        while autosellmax == true do
-            task.wait()
-            if game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart") then
-                if game.Players.LocalPlayer.PlayerGui.gameGui.maxNinjitsuMenu.Visible == true then
-                    game.workspace.sellAreaCircles["sellAreaCircle7"].circleInner.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-                    task.wait()
-                    game.workspace.sellAreaCircles["sellAreaCircle7"].circleInner.CFrame = game.Workspace.Part.CFrame
-                end
-            end
-            if not autosellmax then break end
-        end
-    end)
-end
-
-local function buyswords()
-    spawn(function()
-        while autobuyswords == true do
-            task.wait()
-            if game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart") then
-                local oh1 = "buyAllSwords"
-                local oh2 = {"Ground", "Astral Island", "Space Island", "Tundra Island", "Eternal Island", "Sandstorm", "Thunderstorm", "Ancient Inferno Island", "Midnight Shadow Island", "Mythical Souls Island", "Winter Wonder Island"}
-                for i = 1, #oh2 do
-                    game:GetService("Players").LocalPlayer.ninjaEvent:FireServer(oh1, oh2[i])
-                end
-            end
-            if not autobuyswords then break end
-        end
-    end)
-end
-
-local function buybelts()
-    spawn(function()
-        while autobuybelts == true do
-            task.wait()
-            if game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart") then
-                local oh1 = "buyAllBelts"
-                local oh2 = {"Ground", "Astral Island", "Space Island", "Tundra Island", "Eternal Island", "Sandstorm", "Thunderstorm", "Ancient Inferno Island", "Midnight Shadow Island", "Mythical Souls Island", "Winter Wonder Island"}
-                for i = 1, #oh2 do
-                    game:GetService("Players").LocalPlayer.ninjaEvent:FireServer(oh1, oh2[i])
-                end
-            end
-            if not autobuybelts then break end
-        end
-    end)
-end
-
-local function buyranks()
-    spawn(function()
-        while autobuyranks == true do
-            task.wait()
-            if game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart") then
-                local oh1 = "buyRank"
-                local oh2 = game:GetService("ReplicatedStorage").Ranks.Ground:GetChildren()
-                for i = 1, #oh2 do
-                    game:GetService("Players").LocalPlayer.ninjaEvent:FireServer(oh1, oh2[i].Name)
-                end
-            end
-            if not autobuyranks then break end
-        end
-    end)
-end
-
-local function buyskill()
-    spawn(function()
-        while autobuyskill == true do
-            task.wait()
-            if game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart") then
-                local oh1 = "buyAllSkills"
-                local oh2 = {"Ground", "Astral Island", "Space Island", "Tundra Island", "Eternal Island", "Sandstorm", "Thunderstorm", "Ancient Inferno Island", "Midnight Shadow Island", "Mythical Souls Island", "Winter Wonder Island"}
-                for i = 1, #oh2 do
-                    game:GetService("Players").LocalPlayer.ninjaEvent:FireServer(oh1, oh2[i])
-                end
-            end
-            if not autobuyskill then break end
-        end
-    end)
-end
-
-local function buyshurikens()
-    spawn(function()
-        while autobuyshurikens == true do
-            task.wait()
-            if game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart") then
-                local oh1 = "buyAllShurikens"
-                local oh2 = {"Ground", "Astral Island", "Space Island", "Tundra Island", "Eternal Island", "Sandstorm", "Thunderstorm", "Ancient Inferno Island", "Midnight Shadow Island", "Mythical Souls Island", "Winter Wonder Island"}
-                for i = 1, #oh2 do
-                    game:GetService("Players").LocalPlayer.ninjaEvent:FireServer(oh1, oh2[i])
-                end
-            end
-            if not autobuyshurikens then break end
-        end
-    end)
-end
-
-Ninja:Toggle("自动挥舞", "AutoSwing", false, function(Value)
-    autoswing = Value
-    if autoswing then swinging() end
-end)
-
-Ninja:Toggle("自动售卖", "AutoSell", false, function(Value)
-    autosell = Value
-    if autosell then selling() end
-end)
-
-Ninja:Toggle("存满了自动售卖", "AutoSellMax", false, function(Value)
-    autosellmax = Value
-    if autosellmax then maxsell() end
-end)
-
-Ninja:Toggle("自动购买剑", "AutoBuySwords", false, function(Value)
-    autobuyswords = Value
-    if autobuyswords then buyswords() end
-end)
-
-Ninja:Toggle("自动购买腰带", "AutoBuyBelts", false, function(Value)
-    autobuybelts = Value
-    if autobuybelts then buybelts() end
-end)
-
-Ninja:Toggle("自动购买称号（等级）", "AutoBuyRanks", false, function(Value)
-    autobuyranks = Value
-    if autobuyranks then buyranks() end
-end)
-
-Ninja:Toggle("自动购买忍术", "AutoBuySkills", false, function(Value)
-    autobuyskill = Value
-    if autobuyskill then buyskill() end
-end)
-
-Ninja:Toggle("自动购买（全部打开）", "AutoBuyAll", false, function(Value)
-    autobuyshurikens = Value
-    if autobuyshurikens then buyshurikens() end
-end)
-
-Ninja:Button("解锁所有岛", function()
-    for _, v in next, game.workspace.islandUnlockParts:GetChildren() do
-        if v then
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.islandSignPart.CFrame
-            wait(.5)
-        end
-    end
-end)
-
-Ninja:Button("死亡宠物", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4593.21337890625, 130.87181091308594, 1430.2239990234375)
-end)
-
 -- 标签页21: 河北唐县
-local Hebei = Window:section("河北唐县", true)
-Hebei:Button("河北唐县1", function()
+local Tab21 = Window:Tab("河北唐县", '7734068321')
+local Section25 = Tab21:section("河北唐县功能", true)
+Section25:Button("河北唐县1", function()
     loadstring(game:HttpGet("https://pastefy.app/s20nni0h/raw"))()
 end)
-
-Hebei:Button("河北唐县2", function()
+Section25:Button("河北唐县2", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Sw1ndlerScripts/RobloxScripts/main/Tang%20Country.lua"))()
 end)
 
 -- 标签页22: 越狱
-local Jailbreak = Window:section("越狱", true)
-Jailbreak:Button("抢劫", function()
+local Tab22 = Window:Tab("越狱", '7734068321')
+local Section26 = Tab22:section("越狱功能", true)
+Section26:Button("抢劫", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Pxsta72/ProjectAuto/main/free"))()
 end)
-
-Jailbreak:Button("自瞄", function()
+Section26:Button("自瞄", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/1Gp9c57U"))()
 end)
-
-Jailbreak:Button("青", function()
+Section26:Button("青", function()
     loadstring(game:HttpGet('https://rentry.co/ct293/raw'))()
 end)
 
 -- 标签页23: 兵工厂
-local Arsenal = Window:section("兵工厂", true)
-Arsenal:Button("子弹追踪", function()
+local Tab23 = Window:Tab("兵工厂", '7734068321')
+local Section27 = Tab23:section("兵工厂功能", true)
+Section27:Button("子弹追踪", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/tbao143/thaibao/main/TbaoHubArsenal"))()
 end)
 
 -- 标签页24: 监狱人生
-local PrisonLife = Window:section("监狱人生", true)
-PrisonLife:Button("手里剑秒杀", function()
+local Tab24 = Window:Tab("监狱人生", '7734068321')
+local Section28 = Tab24:section("监狱功能", true)
+Section28:Button("手里剑秒杀", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/PSXhuge/1/114514/jian"))()
 end)
-
-PrisonLife:Button("变车模型", function()
+Section28:Button("变车模型", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/zLe3e4BS"))()
 end)
-
-PrisonLife:Button("变钢铁侠", function()
+Section28:Button("变钢铁侠", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/7prijqYH"))()
 end)
-
-PrisonLife:Button("杀所有人(不可关)", function()
+Section28:Button("杀所有人(不可关)", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/kXjfpFPh"))()
 end)
-
-PrisonLife:Button("无敌模式", function()
+Section28:Button("无敌模式", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/LdTVujTA"))()
 end)
-
-PrisonLife:Button("警卫室", function()
+Section28:Button("警卫室", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(847.7261352539062, 98.95999908447266, 2267.387451171875)
 end)
-
-PrisonLife:Button("监狱室内", function()
+Section28:Button("监狱室内", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(919.2575073242188, 98.95999908447266, 2379.74169921875)
 end)
-
-PrisonLife:Button("罪犯复活点", function()
+Section28:Button("罪犯复活点", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-937.5891723632812, 93.09876251220703, 2063.031982421875)
 end)
-
-PrisonLife:Button("监狱室外", function()
+Section28:Button("监狱室外", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(760.6033325195312, 96.96992492675781, 2475.405029296875)
 end)
-
-PrisonLife:Button("超强指令", function()
+Section28:Button("超强指令", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/Asddffgujhh/-/refs/heads/main/%E7%9B%91%E7%8B%B1%E4%BA%BA%E7%94%9F%E8%B6%85%E5%BC%BA%E6%8C%87%E4%BB%A4'))()
 end)
 
 -- 标签页25: 力量传奇
-local StrengthLegends = Window:section("力量传奇", true)
-StrengthLegends:Button("传送到出生点", function()
+local Tab25 = Window:Tab("力量传奇", '7734068321')
+local Section29 = Tab25:section("力量传奇功能", true)
+Section29:Button("传送到出生点", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(7, 3, 108)
 end)
-
-StrengthLegends:Button("传送到冰霜健身房", function()
+Section29:Button("传送到冰霜健身房", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2543, 13, -410)
 end)
-
-StrengthLegends:Button("传送到神话健身房", function()
+Section29:Button("传送到神话健身房", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2177, 13, 1070)
 end)
-
-StrengthLegends:Button("传送到永恒健身房", function()
+Section29:Button("传送到永恒健身房", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-6686, 13, -1284)
 end)
-
-StrengthLegends:Button("传送到传说健身房", function()
+Section29:Button("传送到传说健身房", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4676, 997, -3915)
 end)
-
-StrengthLegends:Button("传送到肌肉之王健身房", function()
+Section29:Button("传送到肌肉之王健身房", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-8554, 22, -5642)
 end)
-
-StrengthLegends:Button("传送到安全岛", function()
+Section29:Button("传送到安全岛", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-39, 10, 1838)
 end)
-
-StrengthLegends:Button("传送到幸运抽奖区域", function()
+Section29:Button("传送到幸运抽奖区域", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2606, -2, 5753)
 end)
-
-StrengthLegends:Button("范围增加", function()
+Section29:Button("范围增加", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/KKY9EpZU"))()
 end)
 
 -- 标签页26: 速度传奇
-local SpeedLegends = Window:section("速度传奇", true)
-SpeedLegends:Button("开启卡宠", function()
+local Tab26 = Window:Tab("速度传奇", '7734068321')
+local Section30 = Tab26:section("速度传奇功能", true)
+Section30:Button("开启卡宠", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/uR6azdQQ"))()
 end)
-
-SpeedLegends:Button("自动", function()
+Section30:Button("自动", function()
     loadstring(game:HttpGet("https://pastebin.com/raw/AyeCYbT6"))()
 end)
 
 -- 标签页27: 动感星期五
-local Friday = Window:section("动感星期五", true)
-Friday:Button("星期五", function()
+local Tab27 = Window:Tab("动感星期五", '7734068321')
+local Section31 = Tab27:section("动感星期五功能", true)
+Section31:Button("星期五", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/wally-rblx/funky-friday-autoplay/main/main.lua",true))()
 end)
 
 -- 标签页28: 战争大亨
-local WarTycoon = Window:section("战争大亨", true)
-WarTycoon:Button("一枪秒人", function()
+local Tab28 = Window:Tab("战争大亨", '7734068321')
+local Section32 = Tab28:section("战争大亨功能", true)
+Section32:Button("一枪秒人", function()
     loadstring(game:HttpGet('https://pastebin.com/raw/6b4XEjQF'))()
 end)
-
-WarTycoon:Button("脚本1", function()
+Section32:Button("脚本1", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Nivex123456/War-Tycoon/main/Script"))()
 end)
-
-WarTycoon:Button("乌托邦战争大亨", function()
+Section32:Button("乌托邦战争大亨", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/USA868/-/refs/heads/main/.github/workflows/%E6%88%98%E4%BA%89%E5%A4%A7%E4%BA%A8.lua'))()
 end)
 
 -- 标签页29: 冰上钓鱼模拟器
-local Fishing = Window:section("冰上钓鱼模拟器", true)
-Fishing:Button("脚本1", function()
+local Tab29 = Window:Tab("冰上钓鱼模拟器", '7734068321')
+local Section33 = Tab29:section("钓鱼功能", true)
+Section33:Button("脚本1", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/dingding123hhh/anlushanjinchangantangwanle/refs/heads/main/bingshangdiaofish.lua"))()
 end)
 
 -- 标签页30: bf
-local BF = Window:section("bf", true)
-BF:Button("脚本1", function()
+local Tab30 = Window:Tab("bf", '7734068321')
+local Section34 = Tab30:section("bf功能", true)
+Section34:Button("脚本1", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/TirSANX/CrimsonHUB/main/C_Loader'))()
 end)
-
-BF:Button("脚本2", function()
+Section34:Button("脚本2", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/xQuartyx/DonateMe/main/OldBf"))()
 end)
-
-BF:Button("脚本3", function()
+Section34:Button("脚本3", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/REDzHUB/BloxFruits/main/redz9999"))()
 end)
-
-BF:Button("脚本4", function()
+Section34:Button("脚本4", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/plutoguy/Tiger-Hub/main/loader.lua"))()
 end)
-
-BF:Button("脚本5", function()
+Section34:Button("脚本5", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/m1M-Plqer819/any/main/mbmxhub/0135"))()
 end)
 
 -- 标签页31: 彩虹朋友
-local RainbowFriends = Window:section("彩虹朋友", true)
-RainbowFriends:Button("彩虹朋友", function()
+local Tab31 = Window:Tab("彩虹朋友", '7734068321')
+local Section35 = Tab31:section("彩虹朋友功能", true)
+Section35:Button("彩虹朋友", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/Sempiller/RainbowTool/main/Turkish.lua'))();
 end)
-
-RainbowFriends:Button("彩虹朋友2", function()
+Section35:Button("彩虹朋友2", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/JNHHGaming/Rainbow-Friends/main/Rainbow%20Friends"))()
 end)
 
 -- 标签页32: 内脏与黑火药
-local Guts = Window:section("内脏与黑火药", true)
-Guts:Button("内脏与黑火药1", function()
+local Tab32 = Window:Tab("内脏与黑火药", '7734068321')
+local Section36 = Tab32:section("内脏与黑火药功能", true)
+Section36:Button("内脏与黑火药1", function()
     loadstring(game:HttpGet("https://shz.al/~KSKKS"))()
 end)
-
-Guts:Button("内脏与黑火药2", function()
-    loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\40\34\104\116\116\112\115\58\47\47\102\114\101\101\110\111\116\101\46\98\105\122\47\114\97\119\47\109\117\122\110\104\101\114\104\114\117\34\41\44\116\114\117\101\41\41\40\41\10")()
+Section36:Button("内脏与黑火药2", function()
+    loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\119\101\58\72\116\116\112\71\101\116\40\40\34\104\116\116\112\115\58\47\47\102\114\101\101\110\111\116\101\46\98\105\122\47\114\97\119\47\109\117\122\110\104\101\114\104\114\117\34\41\44\116\114\117\101\41\41\40\41\10")()
 end)
 
 -- 标签页33: 幸运方块
-local LuckyBlocks = Window:section("幸运方块", true)
-LuckyBlocks:Button("脚本1", function()
+local Tab33 = Window:Tab("幸运方块", '7734068321')
+local Section37 = Tab33:section("幸运方块功能", true)
+Section37:Button("脚本1", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/PlanetHubX/Lucky-Blocks/main/source", true))()
 end)
 
 -- 标签页34: 造船寻宝
-local ShipBuilding = Window:section("造船寻宝", true)
-ShipBuilding:Button("脚本1", function()
+local Tab34 = Window:Tab("造船寻宝", '7734068321')
+local Section38 = Tab34:section("造船寻宝功能", true)
+Section38:Button("脚本1", function()
     loadstring(game:HttpGet(('https://raw.githubusercontent.com/urmomjklol69/GoldFarmBabft/main/GoldFarm.lua'),true))()
 end)
-
-ShipBuilding:Button("复制别人的船", function()
+Section38:Button("复制别人的船", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/max2007killer/auto-build-not-limit/main/autobuild.txt"))()
 end)
-
-ShipBuilding:Button("无限方块", function()
+Section38:Button("无限方块", function()
     spawn(function()
-        local guiinf = game:GetService("Players").LocalPlayer.PlayerGui.BuildGui.InventoryFrame.ScrollingFrame.BlocksFrame
+        local guiinf = game:GetService("Players").LocalPlayer.PlayerGui.BuildGui.InventoryFrame.ScrollingFrame.BlocksFrame.BlocksFrame
         _G.Blocks = false
         while game:GetService("RunService").RenderStepped:wait() do
             if _G.Blocks then return end
@@ -1572,42 +1100,22 @@ ShipBuilding:Button("无限方块", function()
         end
     end)
 end)
-
-ShipBuilding:Button("刷钱", function()
+Section38:Button("刷钱", function()
     loadstring(game:HttpGet(('https://raw.githubusercontent.com/urmomjklol69/GoldFarmBabft/main/GoldFarm.lua'),true))()
 end)
 
 -- 标签页35: 进击的僵尸
-local ZombieAttack = Window:section("进击的僵尸", true)
-ZombieAttack:Button("进击的僵尸", function()
+local Tab35 = Window:Tab("进击的僵尸", '7734068321')
+local Section39 = Tab35:section("僵尸功能", true)
+Section39:Button("进击的僵尸", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/GamingScripter/Darkrai-X/main/Games/Zombie%20Attack", true))()
 end)
 
--- 标签页36: 战斗勇士
-local CombatWarriors = Window:section("战斗勇士", true)
-CombatWarriors:Button("脚本1", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/frkfx/Combat-Warriors/main/Script"))()
+-- 初始化反挂机
+local vu = game:GetService("VirtualUser")
+game:GetService("Players").LocalPlayer.Idled:connect(function()
+    vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+    wait(1)
+    vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame
 end)
-
-CombatWarriors:Button("脚本2", function()
-    loadstring(game:HttpGet("https://paste.gg/p/anonymous/697fc3cad5f743508318cb7399e89432/files/b5923e52edab4e5c91e46b74563d0ae8/raw"))()
-end)
-
--- 标签页37: 鲨口求生2
-local Sharkbite = Window:section("鲨口求生2", true)
-local boatOptions = {
-    "鸭子船bat", "鸭子船", "蓝色汽艇", "蓝木摩托艇", "独角兽船", "Jetski", "红马", "单桅帆船", "拖船", "小型游艇", 
-    "JetskiDonut", "马林鱼", "管状船", "渔船", "海盗船", "小型木制帆船", "红色摩托艇", "双体船", "战斗艇", 
-    "旅游船", "鸭子海洋生物", "派对船", "军用潜艇", "姜饼轮船", "雪橇2022", "雪地车", "游轮"
-}
-
-Sharkbite:Dropdown("免费船只", "BoatSelect", boatOptions, 1, function(Value)
-    game:GetService("ReplicatedStorage").EventsFolder.BoatSelection.UpdateHostBoat:FireServer(Value)
-end)
-
-Sharkbite:Button("自动杀鲨鱼", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Sw1ndlerScripts/RobloxScripts/main/Misc%20Scripts/sharkbite2.lua",true))()
-end)
-
--- 初始化UI
-Window:Init()
+print("反挂机开启")
